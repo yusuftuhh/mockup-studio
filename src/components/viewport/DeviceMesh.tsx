@@ -4,7 +4,7 @@ import ProceduralDevice from "./ProceduralDevice";
 import GltfDevice from "./GltfDevice";
 
 // Models that have GLTF files available
-const GLTF_MODELS = new Set(["iphone-15-pro", "tablet-3d"]);
+const GLTF_MODELS = new Set(["iphone-15-pro", "ipad-pro-3d", "tablet-3d"]);
 
 interface DeviceMeshProps {
   device: Device;
