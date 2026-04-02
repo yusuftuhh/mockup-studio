@@ -7,7 +7,6 @@ import type {
   ScreenContent,
   Keyframe,
   CameraKeyframe,
-  EasingType,
 } from "../types/scene";
 
 // ── ID Generator ────────────────────────────────────────────────────────────
