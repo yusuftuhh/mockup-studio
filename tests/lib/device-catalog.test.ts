@@ -62,10 +62,12 @@ describe("device-catalog", () => {
     expect(categories.has("watch")).toBe(true);
   });
 
-  it("gltfPath is null for all entries (for now)", () => {
+  it("gltfPath is null or a valid path for all entries", () => {
     const all = getAllDevices();
     for (const entry of all) {
-      expect(entry.gltfPath).toBeNull();
+      if (entry.gltfPath !== null) {
+        expect(entry.gltfPath).toMatch(/^\/models\/.+\.glb$/);
+      }
     }
   });
 

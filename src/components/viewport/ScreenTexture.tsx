@@ -1,6 +1,8 @@
 import { useMemo, useEffect } from "react";
 import * as THREE from "three";
 import type { Layer, ScreenContent } from "../../types/scene";
+import { drawGizmo } from "./ScreenGizmo";
+import type { Vec2 } from "../../types/scene";
 
 interface UseScreenTextureOptions {
   screenWidth: number;
@@ -8,6 +10,8 @@ interface UseScreenTextureOptions {
   screenContent: ScreenContent | null;
   layers: Layer[];
   currentTime: number;
+  selectedLayer?: Layer | null;
+  hoveredHandle?: string | null;
 }
 
 // Pixel resolution multiplier for the offscreen canvas
@@ -278,6 +282,8 @@ export function useScreenTexture({
   screenContent,
   layers,
   currentTime,
+  selectedLayer = null,
+  hoveredHandle = null,
 }: UseScreenTextureOptions): THREE.CanvasTexture {
   const canvasWidth = Math.max(1, Math.round(screenWidth * RESOLUTION));
   const canvasHeight = Math.max(1, Math.round(screenHeight * RESOLUTION));
@@ -308,6 +314,10 @@ export function useScreenTexture({
         ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
         // Draw layers on top of image
         drawVisibleLayers(ctx, layers, currentTime, canvasWidth, canvasHeight);
+        // Draw gizmo
+        if (selectedLayer) {
+          drawGizmo(ctx, selectedLayer, canvasWidth, canvasHeight, hoveredHandle as any);
+        }
         texture.needsUpdate = true;
       };
       img.src = screenContent.source;
@@ -331,9 +341,15 @@ export function useScreenTexture({
 
       // Draw layers
       drawVisibleLayers(ctx, layers, currentTime, canvasWidth, canvasHeight);
+
+      // Draw gizmo for selected layer
+      if (selectedLayer) {
+        drawGizmo(ctx, selectedLayer, canvasWidth, canvasHeight, hoveredHandle as any);
+      }
+
       texture.needsUpdate = true;
     }
-  }, [canvas, canvasWidth, canvasHeight, screenContent, layers, currentTime, texture]);
+  }, [canvas, canvasWidth, canvasHeight, screenContent, layers, currentTime, texture, selectedLayer, hoveredHandle]);
 
   return texture;
 }
