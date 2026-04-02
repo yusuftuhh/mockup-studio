@@ -8,6 +8,9 @@ dist-ssr/
 # Tauri
 src-tauri/target/
 
+# MCP Server
+mcp-server/target/
+
 # Environment
 .env
 .env.local
