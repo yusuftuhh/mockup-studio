@@ -54,9 +54,14 @@ export default function ProceduralDevice({ device }: ProceduralDeviceProps) {
 
   const geo = useMemo(() => createProceduralGeometry(params), [params]);
 
+  // screenWidth/screenHeight in params are in mm — convert to reasonable pixel resolution
+  // Use ~10px per mm for a good canvas resolution
+  const canvasW = Math.round(params.screenWidth * 10);
+  const canvasH = Math.round(params.screenHeight * 10);
+
   const screenTexture = useScreenTexture({
-    screenWidth: params.screenWidth,
-    screenHeight: params.screenHeight,
+    screenWidth: canvasW,
+    screenHeight: canvasH,
     screenContent: device.screenContent,
     layers: device.layers,
     currentTime,
