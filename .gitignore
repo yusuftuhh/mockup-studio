@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Tauri
+src-tauri/target/
+src-tauri/binaries/
+
+# MCP Server
+mcp-server/target/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Superpowers
+.superpowers/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
