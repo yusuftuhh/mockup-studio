@@ -312,12 +312,22 @@ export function useScreenTexture({
       };
       img.src = screenContent.source;
     } else {
-      // Default dark screen gradient
+      // Default screen with subtle gradient + branding
       const grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-      grad.addColorStop(0, "#1a1a2e");
-      grad.addColorStop(1, "#16162a");
+      grad.addColorStop(0, "#1e1e3e");
+      grad.addColorStop(1, "#0e0e2e");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // Draw "MockupStudio" watermark so user can verify texture is applied
+      ctx.save();
+      ctx.fillStyle = "rgba(124, 124, 255, 0.15)";
+      const wmSize = Math.round(canvasWidth * 0.04);
+      ctx.font = `bold ${wmSize}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("MockupStudio", canvasWidth / 2, canvasHeight / 2);
+      ctx.restore();
 
       // Draw layers
       drawVisibleLayers(ctx, layers, currentTime, canvasWidth, canvasHeight);

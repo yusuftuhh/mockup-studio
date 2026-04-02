@@ -71,23 +71,30 @@ export default function GltfDevice({ device }: GltfDeviceProps) {
     return clone;
   }, [gltfScene]);
 
+  // Use proper pixel resolution for the canvas, not mm dimensions
+  const SCREEN_PX: Record<string, [number, number]> = {
+    "ipad-pro-3d": [2064, 2752],
+    "iphone-15-pro": [1206, 2622],
+    "tablet-3d": [1600, 2560],
+  };
+  const [resPx, resPy] = device.model && SCREEN_PX[device.model]
+    ? SCREEN_PX[device.model]
+    : [1920, 1080];
+
   const screenTexture = useScreenTexture({
-    screenWidth: device.proceduralParams?.screenWidth ?? 1920,
-    screenHeight: device.proceduralParams?.screenHeight ?? 1080,
+    screenWidth: resPx,
+    screenHeight: resPy,
     screenContent: device.screenContent,
     layers: device.layers,
     currentTime,
   });
 
-  // Find and apply screen texture to the screen mesh
+  // Apply screen texture to all meshes that look like screens
   useEffect(() => {
     if (!screenTexture || !clonedScene) return;
 
-    // Strategy: find the mesh that is most likely the screen
-    // - It should be one of the larger flat meshes
-    // - Typically has a dark/black material (screen off = black)
-    let screenMesh: THREE.Mesh | null = null;
-    let screenScore = -1;
+    // Log mesh structure for debugging
+    const meshes: { name: string; area: number; flatness: number; dark: boolean }[] = [];
 
     clonedScene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
@@ -98,39 +105,34 @@ export default function GltfDevice({ device }: GltfDeviceProps) {
 
       const size = new THREE.Vector3();
       box.getSize(size);
-
-      // Score: prefer large, flat surfaces
       const dims = [size.x, size.y, size.z].sort((a, b) => b - a);
-      const flatness = dims[0] * dims[1] / (dims[2] + 0.001); // larger = flatter
+      const flatness = dims[2] < 0.01 ? 1000 : dims[0] * dims[1] / dims[2];
       const area = dims[0] * dims[1];
 
-      let score = area * flatness;
-
-      // Bonus for dark materials (screens are usually dark/black)
+      let isDark = false;
       const mat = child.material;
       if (mat instanceof THREE.MeshStandardMaterial && mat.color) {
-        const brightness = mat.color.r + mat.color.g + mat.color.b;
-        if (brightness < 0.5) score *= 2;
+        isDark = (mat.color.r + mat.color.g + mat.color.b) < 0.3;
       }
 
-      // Check mesh name for hints
-      const name = child.name.toLowerCase();
-      if (name.includes("screen") || name.includes("display")) score *= 10;
+      meshes.push({ name: child.name, area, flatness, dark: isDark });
 
-      if (score > screenScore) {
-        screenScore = score;
-        screenMesh = child;
+      // Apply screen texture to mesh if it matches screen criteria:
+      // - Name contains screen/display/glass
+      // - OR: large flat surface with dark material
+      const name = child.name.toLowerCase();
+      const isScreenByName = name.includes("screen") || name.includes("display") || name.includes("glass") || name.includes("lcd");
+      const isScreenByGeometry = area > 0.1 && flatness > 50 && isDark;
+
+      if (isScreenByName || isScreenByGeometry) {
+        child.material = new THREE.MeshBasicMaterial({
+          map: screenTexture,
+          toneMapped: false,
+        });
       }
     });
 
-    if (screenMesh) {
-      const mesh = screenMesh as THREE.Mesh;
-      const newMat = new THREE.MeshBasicMaterial({
-        map: screenTexture,
-        toneMapped: false,
-      });
-      mesh.material = newMat;
-    }
+    console.log("[MockupStudio] GLTF meshes:", meshes);
   }, [screenTexture, clonedScene]);
 
   // Keyframe animation
