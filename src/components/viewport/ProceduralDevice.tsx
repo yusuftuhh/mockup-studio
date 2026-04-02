@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { createProceduralGeometry } from "../../lib/procedural-geometry";
 import { useScreenTexture } from "./ScreenTexture";
-import type { Device } from "../../types/scene";
+import { interpolateKeyframes } from "../../engine/interpolator";
+import type { Device, Vec3 } from "../../types/scene";
 import { useSceneStore } from "../../stores/scene-store";
 
 interface ProceduralDeviceProps {
@@ -80,11 +81,59 @@ export default function ProceduralDevice({ device }: ProceduralDeviceProps) {
 
   const matProps = getMaterialProps(geo.material);
 
+  // ── Keyframe Animation (Task 18) ────────────────────────────────────────
+  const hasKf = device.keyframes.length > 0;
+
+  const animatedPosition: Vec3 = useMemo(() => {
+    if (!hasKf) return device.position;
+    const kfs = device.keyframes;
+    const px = kfs.some((k) => k.property === "position.x")
+      ? interpolateKeyframes(kfs, "position.x", currentTime)
+      : device.position[0];
+    const py = kfs.some((k) => k.property === "position.y")
+      ? interpolateKeyframes(kfs, "position.y", currentTime)
+      : device.position[1];
+    const pz = kfs.some((k) => k.property === "position.z")
+      ? interpolateKeyframes(kfs, "position.z", currentTime)
+      : device.position[2];
+    return [px, py, pz];
+  }, [hasKf, device.keyframes, device.position, currentTime]);
+
+  const animatedRotation: Vec3 = useMemo(() => {
+    if (!hasKf) return device.rotation;
+    const kfs = device.keyframes;
+    const rx = kfs.some((k) => k.property === "rotation.x")
+      ? interpolateKeyframes(kfs, "rotation.x", currentTime)
+      : device.rotation[0];
+    const ry = kfs.some((k) => k.property === "rotation.y")
+      ? interpolateKeyframes(kfs, "rotation.y", currentTime)
+      : device.rotation[1];
+    const rz = kfs.some((k) => k.property === "rotation.z")
+      ? interpolateKeyframes(kfs, "rotation.z", currentTime)
+      : device.rotation[2];
+    return [rx, ry, rz];
+  }, [hasKf, device.keyframes, device.rotation, currentTime]);
+
+  const animatedScale: Vec3 = useMemo(() => {
+    if (!hasKf) return device.scale;
+    const kfs = device.keyframes;
+    const sx = kfs.some((k) => k.property === "scale.x")
+      ? interpolateKeyframes(kfs, "scale.x", currentTime)
+      : device.scale[0];
+    const sy = kfs.some((k) => k.property === "scale.y")
+      ? interpolateKeyframes(kfs, "scale.y", currentTime)
+      : device.scale[1];
+    const sz = kfs.some((k) => k.property === "scale.z")
+      ? interpolateKeyframes(kfs, "scale.z", currentTime)
+      : device.scale[2];
+    return [sx, sy, sz];
+  }, [hasKf, device.keyframes, device.scale, currentTime]);
+
   return (
     <group
-      position={device.position}
-      rotation={device.rotation.map((r) => (r * Math.PI) / 180) as [number, number, number]}
-      scale={device.scale}
+      position={animatedPosition}
+      rotation={animatedRotation.map((r) => (r * Math.PI) / 180) as [number, number, number]}
+      scale={animatedScale}
     >
       {/* Device body */}
       <mesh geometry={bodyGeometry}>
