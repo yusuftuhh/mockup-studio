@@ -39,10 +39,7 @@
       "open": true
     },
     "fs": {
-      "scope": {
-        "allow": ["$APPDATA/**", "$DOWNLOAD/**", "$DESKTOP/**"],
-        "deny": []
-      }
+      "requireLiteralLeadingDot": false
     }
   }
 }
