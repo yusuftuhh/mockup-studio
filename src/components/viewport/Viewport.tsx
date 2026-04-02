@@ -1,8 +1,32 @@
-import { useEffect } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, Grid, ContactShadows } from "@react-three/drei";
 import { useSceneStore } from "../../stores/scene-store";
 import DeviceMesh from "./DeviceMesh";
+import { isOrbitEnabled } from "./ScreenGizmo";
+
+// OrbitControls that auto-disable during gizmo drag
+function SmartOrbitControls() {
+  const controlsRef = useRef<any>(null);
+  useFrame(() => {
+    if (controlsRef.current) {
+      controlsRef.current.enabled = isOrbitEnabled();
+    }
+  });
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enableDamping
+      dampingFactor={0.08}
+      minDistance={0.05}
+      maxDistance={50}
+      rotateSpeed={0.8}
+      zoomSpeed={1.2}
+      panSpeed={0.8}
+    />
+  );
+}
 
 // Separate component to force camera near plane inside Canvas
 function CameraSetup() {
@@ -68,16 +92,7 @@ export default function Viewport() {
           <DeviceMesh key={device.id} device={device} />
         ))}
 
-        <OrbitControls
-          makeDefault
-          enableDamping
-          dampingFactor={0.08}
-          minDistance={0.05}
-          maxDistance={50}
-          rotateSpeed={0.8}
-          zoomSpeed={1.2}
-          panSpeed={0.8}
-        />
+        <SmartOrbitControls />
       </Canvas>
     </div>
   );
