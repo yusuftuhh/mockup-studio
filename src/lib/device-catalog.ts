@@ -12,6 +12,46 @@ export interface CatalogEntry {
 
 // All dimensions in mm
 const catalog: CatalogEntry[] = [
+  // ── 3D Models (GLTF) ──────────────────────────────────────────────────
+  {
+    model: "iphone-15-pro",
+    name: "iPhone 15 Pro (3D)",
+    category: "phone",
+    gltfPath: "/models/iphone-15-pro.glb",
+    proceduralParams: {
+      width: 70.6,
+      height: 146.6,
+      screenWidth: 66.6,
+      screenHeight: 140.6,
+      bezelTop: 3.0,
+      bezelBottom: 3.0,
+      bezelSide: 2.0,
+      cornerRadius: 10,
+      thickness: 8.25,
+      color: "#1c1c1e",
+      material: "metallic",
+    },
+  },
+  {
+    model: "tablet-3d",
+    name: "Tablet (3D)",
+    category: "tablet",
+    gltfPath: "/models/tablet.glb",
+    proceduralParams: {
+      width: 178.5,
+      height: 247.6,
+      screenWidth: 162.5,
+      screenHeight: 231.6,
+      bezelTop: 8,
+      bezelBottom: 8,
+      bezelSide: 8,
+      cornerRadius: 12,
+      thickness: 6.1,
+      color: "#2e2e30",
+      material: "metallic",
+    },
+  },
+
   // ── Phones ──────────────────────────────────────────────────────────────
 
   {
