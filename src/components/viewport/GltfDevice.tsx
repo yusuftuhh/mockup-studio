@@ -27,6 +27,11 @@ const MODEL_CONFIG: Record<
     scale: 0.35,
     rotation: [0, 0, 0],
   },
+  "ipad-pro-3d": {
+    path: "/models/ipad-pro.glb",
+    scale: 0.015,
+    rotation: [0, 0, 0],
+  },
   "tablet-3d": {
     path: "/models/tablet.glb",
     scale: 0.012,
