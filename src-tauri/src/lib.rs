@@ -1,4 +1,5 @@
 mod commands;
+mod websocket;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -14,6 +15,12 @@ pub fn run() {
             commands::export::get_export_progress,
             commands::export::export_frames_to_video,
         ])
+        .setup(|_app| {
+            tauri::async_runtime::spawn(async {
+                websocket::start_ws_server(9876).await;
+            });
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
