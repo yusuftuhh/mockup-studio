@@ -11,7 +11,7 @@ export default function Viewport() {
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 50 }}
+        camera={{ position: [0, 0, 5], fov: 50, near: 0.01, far: 1000 }}
         gl={{ preserveDrawingBuffer: true, antialias: true }}
         style={{ background: bgColor }}
       >
@@ -43,7 +43,13 @@ export default function Viewport() {
           <DeviceMesh key={device.id} device={device} />
         ))}
 
-        <OrbitControls makeDefault />
+        <OrbitControls
+          makeDefault
+          enableDamping
+          dampingFactor={0.1}
+          minDistance={0.1}
+          maxDistance={50}
+        />
       </Canvas>
     </div>
   );
