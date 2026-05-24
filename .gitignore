@@ -4,10 +4,12 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+build/
 
 # Tauri
 src-tauri/target/
 src-tauri/binaries/
+src-tauri/gen/
 
 # MCP Server
 mcp-server/target/
@@ -16,11 +18,21 @@ mcp-server/target/
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
 
-# Superpowers
-.superpowers/
+# Tests / coverage
+coverage/
+.nyc_output/
+*.lcov
 
-# IDE
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+
+# IDE / editors
 .vscode/
 .idea/
 *.swp
@@ -30,6 +42,47 @@ mcp-server/target/
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local notes, prompts, drafts that should never ship
+notes/
+drafts/
+prompts/
+scratch/
+playground/
+sandbox/
+TODO.md
+NOTES.md
+PROMPTS.md
+PLAN.md
+
+# AI assistant artifacts (local only, not for the public repo)
+.claude/
+.aider*
+.cursor/
+.cursorrules
+.continue/
+.superpowers/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+COPILOT.md
+docs/superpowers/
+docs/internal/
+docs/planning/
+
+# Test renders / sample outputs
+renders/
+exports/
+*.mov
+*.mp4
+*.webm
+*.gif
+sample-output/
